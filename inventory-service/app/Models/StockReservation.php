@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class StockReservation extends Model
 {
@@ -13,5 +14,14 @@ class StockReservation extends Model
 
     public function StockReservationItems(): HasMany {
         return $this->hasMany(StockReservationItem::class);
+    }
+
+    public static function booted()
+    {
+        static::creating(function ($model) {
+            if (!$model->id) {
+                $model->id = (String) Str::uuid();
+            }
+        });
     }
 }
