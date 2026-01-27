@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\InsufficientStockException;
+use App\Exceptions\ConFlictState;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RequestIdMiddleware;
 use Illuminate\Foundation\Application;
@@ -34,28 +35,37 @@ return Application::configure(basePath: dirname(__DIR__))
                         'message'=>'Validation failed',
                         'details'=>$e->errors(),
                     ],
-                    'requestId'=>$request->attribute->get('x-request-id'),
+                    'requestId'=>$request->attributes->get('x-request-id'),
                 ],400);
         });
 
-        // $exceptions->render(function(InsufficientStockException $e, Request $request){
-        //         return response()->json([
-        //             'error'=>[
-        //                 'code'=>'INSUFFICIENT_STOCK',
-        //                 'message'=>$e->getMessage(),
-        //                 'details'=>$e->getDetails(),
-        //             ],
-        //             'requestId'=>$request->attribute->get('x-request-id'),
-        //         ],409);
-        // });
-
+         $exceptions->render(function(InsufficientStockException $e, Request $request){
+                 return response()->json([
+                     'error'=>[
+                         'code'=>'INSUFFICIENT_STOCK',
+                         'message'=>$e->getMessage(),
+                         'details'=>$e->getDetails(),
+                     ],
+                     'requestId'=>$request->attributes->get('x-request-id'),
+                 ],409);
+         });
+        $exceptions->render(function(ConFlictState $e, Request $request){
+            return response()->json([
+                'error'=>[
+                    'code'=>'CONFLICT_STATE',
+                    'message'=>$e->getMessage(),
+                    'details'=>$e->getDetails() ??[],
+                ],
+                'requestId'=>$request->attributes->get('x-request-id'),
+            ],409);
+        });
         $exceptions->render(function(NotFoundHttpException $e, Request $request){
                 return response()->json([
                     'error'=>[
                         'code'=>'NOT_FOUND',
                         'message'=>$e->getMessage(),
                     ],
-                    'requestId'=>$request->attribute->get('x-request-id'),
+                    'requestId'=>$request->headers->get('x-request-id'),
                 ],404);
         });
 

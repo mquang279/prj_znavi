@@ -24,7 +24,7 @@ return new class extends Migration
                 'EXPIRED',
             ]);
             $table->integer('total_amount');
-            $table->string('reservationId')->nullable(true);
+            $table->string('reservation_id')->nullable(true);
             $table->timestamps();
         });
     }

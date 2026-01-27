@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BillRequest;
 use App\Services\Interface\BillService;
+use Illuminate\Foundation\Http\FormRequest;
 
 class BillController extends Controller{
     protected $billService;
@@ -18,8 +19,15 @@ class BillController extends Controller{
     public function create(BillRequest $request)
     {
         return response()->json(
-            $this->billService->createBill($request->validated()['items']),
+            $this->billService->createBill($request->validated()['items'],$request->headers->get('x-request-id')),
             201
+        );
+    }
+
+    public function confirm(string $id,FormRequest $request)
+    {
+        return response()->json(
+            $this->billService->confirmBill($id,$request->headers->get('x-request-id')),200
         );
     }
 }

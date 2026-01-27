@@ -9,7 +9,8 @@ class BillRepositoryImpl implements BillRepository {
         return Bill::create($data);
     }
     public function findById(string $id):?Bill{
-        return Bill::with('items')->find($id);
+        return Bill::where('id',$id)
+                    ->first();
     }
     public function findAll(){
         return Bill::all();

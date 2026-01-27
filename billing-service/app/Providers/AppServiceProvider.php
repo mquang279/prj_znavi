@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BillItemRepository::class, BillItemRepositoryImpl::class);
         $this->app->bind(BillRepository::class, BillRepositoryImpl::class);
         $this->app->bind(BillService::class, BillServiceImpl::class);
+        $this->app->bind(\App\Inventory\InventoryClient::class);
     }
 
     /**
