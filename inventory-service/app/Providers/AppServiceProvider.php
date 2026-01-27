@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\ProductRepository;
+use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\StockRepository;
+use App\Repositories\StockRepositoryInterface;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +19,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            ProductRepositoryInterface::class,
+            ProductRepository::class,
+        );
+
+        $this->app->bind(
+            StockRepositoryInterface::class,
+            StockRepository::class
+        );
+
     }
 
     /**
@@ -34,7 +47,8 @@ class AppServiceProvider extends ServiceProvider
             app()->isProduction(),
         );
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
+        Password::defaults(
+            fn(): ?Password => app()->isProduction()
             ? Password::min(12)
                 ->mixedCase()
                 ->letters()
