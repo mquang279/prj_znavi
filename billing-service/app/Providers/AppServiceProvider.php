@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+
+use App\Repositories\BillItemRepositoryImpl;
+use App\Repositories\BillRepositoryImpl;
+use App\Repositories\Interfaces\BillItemRepository;
+use App\Repositories\Interfaces\BillRepository;
+use App\Services\BillServiceImpl;
+use App\Services\Interface\BillService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(BillItemRepository::class, BillItemRepositoryImpl::class);
+        $this->app->bind(BillRepository::class, BillRepositoryImpl::class);
+        $this->app->bind(BillService::class, BillServiceImpl::class);
     }
 
     /**
