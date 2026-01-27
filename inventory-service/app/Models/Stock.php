@@ -12,6 +12,9 @@ class Stock extends Model
     protected $fillable = ["product_id", "available_qty"];
 
     protected $keyType = 'string';
+
+    protected $primaryKey = 'product_id';
+
     public $incrementing = false;
 
     public function product(): BelongsTo
