@@ -12,8 +12,13 @@ class StockReservation extends Model
 
     protected $fillable = ["id", "request_id", "bill_id", "status", "expired_at", "created_at", "updated_at"];
 
-    public function StockReservationItems(): HasMany {
-        return $this->hasMany(StockReservationItem::class);
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    public function StockReservationItems(): HasMany
+    {
+        return $this->hasMany(StockReservationItem::class, 'reservation_id');
     }
 
     public static function booted()
