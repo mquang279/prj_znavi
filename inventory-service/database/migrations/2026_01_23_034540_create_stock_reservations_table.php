@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('stock_reservations', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->string("request_id")->unique();
             $table->uuid("bill_id");
+            $table->uuid("request_id")->unique();
             $table->enum("status", [
                 "RESERVED",
                 "COMMITTED",
