@@ -7,11 +7,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Stock extends Model
 {
-    protected $table = "stock";
-    
-    protected $fillable = ["product_id", "available_qty", "updated_at"];
+    protected $table = "stocks";
 
-    public function product(): BelongsTo {
+    protected $fillable = ["product_id", "available_qty"];
+
+    protected $keyType = 'string';
+
+    protected $primaryKey = 'product_id';
+
+    public $incrementing = false;
+
+    public function product(): BelongsTo
+    {
         return $this->belongsTo(Product::class);
     }
 }

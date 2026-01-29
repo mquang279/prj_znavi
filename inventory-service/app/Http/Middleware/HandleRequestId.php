@@ -3,27 +3,39 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandleRequestId
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        $requestId = (string) Str::uuid();
+        $key = $request->header('x-request-id');
+        $url = $request->url();
 
-        $request->headers->set('x-request-id', $requestId);
+        if (!$key) {
+            return response()->json([
+                'message' => 'Missing x-request-id header'
+            ], 400);
+        }
 
-        Log::shareContext([
-            'request_id' => $requestId
-        ]);
+        $reservation = DB::table('stock_reservations')
+            ->where('request_id', $key)
+            ->first();
 
-        $response = $next($request);
+        if ($reservation && ($reservation->status !== 'RESERVED' || str_contains($url, 'reserve'))) {
+            return response()->json([
+                'data' => $reservation
+            ], 200);
+        }
 
-        $response->headers->set('x-request-id', $requestId);
-
-        return $response;
+        return $next($request);
     }
+
 }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_reservation_items', function (Blueprint $table) {
-            $table->integer("reservation_id");
-            $table->integer("product_id");
+            $table->uuid("reservation_id");
+            $table->uuid("product_id");
             $table->integer("qty");
 
             $table->foreign("reservation_id")
