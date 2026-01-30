@@ -14,8 +14,8 @@ class ReservationController
         $this->reservationService = $reservationService;
     }
 
-    public function reserve(CreateReservationRequest $data) {
-        $reservation = $this->reservationService->reserve($data->validated(), "a9ac5745-cd7e-445d-96f3-9d0bb78f24e0");
+    public function reserve(Request $request, CreateReservationRequest $data) {
+        $reservation = $this->reservationService->reserve($data->validated(), $request->header('x-request-id'));
         return response()->json($reservation, 201);
     }
 

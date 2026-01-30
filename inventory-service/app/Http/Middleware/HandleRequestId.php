@@ -30,9 +30,7 @@ class HandleRequestId
             ->first();
 
         if ($reservation && ($reservation->status !== 'RESERVED' || str_contains($url, 'reserve'))) {
-            return response()->json([
-                'data' => $reservation
-            ], 200);
+            return response()->json($reservation, 200);
         }
 
         return $next($request);

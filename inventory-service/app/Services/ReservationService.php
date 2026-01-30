@@ -52,7 +52,11 @@ class ReservationService
 
     public function commit(int $id)
     {
-
+        return DB::transaction(function () use ($id) {
+            $reservation = $this->reservationRepository->find($id);
+            $reservation->status = "COMMITTED";
+            $reservation->save();
+        });
     }
 
     public function release(int $id)
