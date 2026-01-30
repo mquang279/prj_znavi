@@ -4,38 +4,45 @@ namespace App\Inventory;
 
 use App\Exceptions\InventoryException;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use Illuminate\Support\Str;
-
 class InventoryClient
 {
-    public function reserve(array $payload, string $requestId): array
+    private Client $client;
+    public function __construct(){
+        $this->client = new Client(
+            [
+//                'base_uri'=> config('services.inventory.base_uri'),
+                'base_uri'=>'http://inventory-service',
+                'timeout'=>10,
+            ]
+        );
+    }
+    public function reserve(array $payload, string $requestId)
     {
-        // giả lập thiếu hàng nếu qty > 5
-        foreach ($payload['items'] as $item) {
-            if ($item['qty'] > 5) {
-                throw new InventoryException(
-                    'INSUFFICIENT_STOCK',
-                    'Not enough stock',
-                    [
-                        'items' => [
-                            [
-                                'productId' => $item['productId'],
-                                'requested' => $item['qty'],
-                                'available' => 5,
-                            ]
-                        ]
-                    ]
-                );
+        try {
+            if (!Str::isUuid($requestId)) {
+                $requestId = (string) Str::uuid();
             }
+            $response= $this->client->post('/api/reservations/reserve', [
+                'headers' => [
+                    'x-request-id' => $requestId,
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $payload,
+            ]);
+            return json_decode($response->getBody()->getContents());
+        } catch (RequestException $e) {
+            throw new InventoryException(
+                'INVENTORY_SERVICE_ERROR',
+                'Inventory service not available',
+                [
+                    'message' => $e->getMessage(),
+                    'response' => optional($e->getResponse())->getBody()?->getContents(),
+                ]
+            );
         }
-
-        return [
-            'reservationId' => 'RSV_' . Str::uuid(),
-            'requestId' => $requestId,
-            'billId' => $payload['billId'],
-            'status' => 'RESERVED',
-            'expireAt' => Carbon::now()->addSeconds($payload['ttlSeconds'])->toISOString(),
-        ];
     }
 
     public function commit(string $requestId){

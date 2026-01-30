@@ -34,7 +34,10 @@ class HandleRequestId
                 'data' => $reservation
             ], 200);
         }
-
+        Log::info('Incoming request', [
+            'request_id' => $request->header('x-request-id'),
+            'path' => $request->path(),
+        ]);
         return $next($request);
     }
 
