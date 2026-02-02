@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class Product extends Model
 {
     protected $table = "products";
-    protected $fillable = ['id', 'name', 'price', 'description', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'name', 'price', 'description', 'image_url', 'created_at', 'updated_at'];
     protected $keyType = 'string';
     public $incrementing = false;
 

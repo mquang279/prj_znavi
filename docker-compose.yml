@@ -15,22 +15,42 @@ services:
     networks:
       - app-network
 
-  billing-db:
-    image: postgres:17-alpine
-    container_name: billing-db
-    restart: always
-    environment:
-      POSTGRES_DB: billing
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: mypassword
+  minio:
+    image: minio/minio
+    container_name: minio
+    command: server /data --console-address ":9001"
     ports:
-      - "5432:5432"
+      - "8000:9000"
+      - "8001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: mypassword
     volumes:
-      - billing-data:/var/lib/postgresql/data
+      - minio:/data
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d billing"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  user-db:
+    image: postgres:17-alpine
+    container_name: user-db
+    restart: always
+    environment:
+      POSTGRES_DB: user
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5434:5432"
+    volumes:
+      - user-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d billing" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,6 +74,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./user-service:/var/www
+      - user-vendor:/var/www/vendor
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: user-db
+      DB_PORT: 5432
+      DB_DATABASE: billing
+      DB_USERNAME: root
+      DB_PASSWORD: mypassword
+      APP_ENV: local
+      APP_DEBUG: "true"
+      
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+    depends_on:
+      user-db:
+        condition: service_healthy
 
   billing-service:
     build:
@@ -112,8 +160,11 @@ services:
 volumes:
   billing-data:
   inventory-data:
+  user-data:
   billing-vendor:
   inventory-vendor:
+  user-vendor:
+  minio:
 
 networks:
   app-network:
