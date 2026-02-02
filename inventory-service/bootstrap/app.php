@@ -8,7 +8,6 @@ use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        commands: __DIR__ . '/../routes/console.php',
         api: __DIR__ . '/../routes/api.php',
         health: '/up',
     )
@@ -19,5 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->shouldRenderJsonWhen(function (Request $request, \Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
     })->create();

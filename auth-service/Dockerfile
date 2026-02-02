@@ -36,8 +36,8 @@ COPY . .
 RUN composer dump-autoload --optimize && \
     composer run-script post-autoload-dump --no-interaction || true
 
-RUN chown -R www-data:www-data \
-    storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
 
