@@ -50,7 +50,27 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U root -d billing" ]
+      test: ["CMD-SHELL", "pg_isready -U root -d billing"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  billing-db:
+    image: postgres:17-alpine
+    container_name: billing-db
+    restart: always
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - billing-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d billing"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -75,28 +95,27 @@ services:
       timeout: 5s
       retries: 5
 
-  api-gateway:
+  auth-service:
     build:
-      context: ./api-gateway
+      context: ./auth-service
       dockerfile: Dockerfile
-    container_name: api-gateway
+    container_name: auth-service
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - ./user-service:/var/www
-      - user-vendor:/var/www/vendor
+      - ./auth-service:/var/www
+      - auth-vendor:/var/www/vendor
     environment:
       DB_CONNECTION: pgsql
       DB_HOST: user-db
       DB_PORT: 5432
-      DB_DATABASE: billing
+      DB_DATABASE: user
       DB_USERNAME: root
       DB_PASSWORD: mypassword
       APP_ENV: local
       APP_DEBUG: "true"
-      
     ports:
-      - "9000:9000"
+      - "9002:9000"
     networks:
       - app-network
     depends_on:
@@ -163,7 +182,7 @@ volumes:
   user-data:
   billing-vendor:
   inventory-vendor:
-  user-vendor:
+  auth-vendor:
   minio:
 
 networks:
