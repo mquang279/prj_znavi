@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import HomePage from './pages/HomePage.tsx';
 import DefaultLayout from './components/layout/DefaultLayout.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import LoginPage from './pages/LoginPage.tsx';
+import RegisterPage from './pages/RegisterPage.tsx';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,15 @@ ReactDOM.createRoot(root).render(
             <HomePage />
           </DefaultLayout>
         } />
+
+        <Route path='/login' element={
+          <LoginPage />
+        } 
+        />
+
+        <Route path='/register' element={
+          <RegisterPage/> 
+        }/>
       </Routes>
     </BrowserRouter>
   </QueryClientProvider>
