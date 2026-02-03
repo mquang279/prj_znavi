@@ -60,6 +60,14 @@ return [
             'report' => false,
         ],
 
+        'minio' => [
+            'driver' => 'minio',
+            'key' => env('MINIO_ACCESS_KEY'),
+            'secret' => env('MINIO_SECRET_KEY'),
+            'region' => env('MINIO_REGION', 'us-east-1'),
+            'bucket' => env('MINIO_DEFAULT_BUCKET', 'inventory'),
+            'endpoint' => env('MINIO_ENDPOINT', 'http://minio:9000'),
+        ],
     ],
 
     /*

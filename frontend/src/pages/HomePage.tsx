@@ -23,13 +23,13 @@ const HomePage = () => {
     // }
 
     return (
-        <div className="min-h-screen px-80 py-12">
+        <div className="min-h-screen px-5 md:px-30 lg:px-80 py-12">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-semibold">FEATURED PRODUCTS</h1>
-                <button className="border transition ease-in-out delay-50 duration-300 hover:-translate-y-0.5 hover:scale-105 border-black px-8 py-2 rounded-lg text-sm font-semibold hover:bg-black hover:text-white cursor-pointer">VIEW ALL</button>
+                <h1 className="text-md md:text-2xl font-semibold">FEATURED PRODUCTS</h1>
+                <button className="border transition ease-in-out delay-50 duration-300 hover:-translate-y-0.5 hover:scale-105 border-black px-3 py-1 md:px-8 md:py-2 rounded-lg text-sm font-semibold hover:bg-black hover:text-white cursor-pointer">VIEW ALL</button>
             </div>
 
-            <div className="mt-12 grid grid-cols-2 gap-20">
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-20">
                 {PRODUCTS.map((product) =>
                     <NavLink to="/" className="">
                         <img src={product.url} alt="" className="" />
