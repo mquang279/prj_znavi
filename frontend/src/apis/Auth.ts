@@ -3,14 +3,14 @@ import axiosClient from "./AxiosClient";
 
 
 interface RefreshTokenResponse {
-    accessToken: string;
-    user: User;
+    access_token: string;
+    token_type: string;
+    expires_in: number;
 }
 
 export interface LoginResponse {
     accessToken: string;
-    tokenType: string;
-    expiresIn: number;
+    user: User;
 }
 
 export interface RegisterCredentials {
@@ -32,7 +32,7 @@ export const refreshToken = async (): Promise<string> => {
     const response = await axiosClient.post<RefreshTokenResponse>(
         `/auth/refresh`
     );
-    return response.data.accessToken;
+    return response.data.access_token;
 };
 
 export const register = async (data: RegisterCredentials): Promise<User> => {

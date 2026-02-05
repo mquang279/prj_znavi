@@ -7,7 +7,8 @@ export interface RegisterCredentials {
     email: string
     username: string
     password: string
-    age: number
+    address: string
+    phoneNumber: string
 }
 
 const useRegister = () => {

@@ -6,6 +6,7 @@ import DefaultLayout from './components/layout/DefaultLayout.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import LoginPage from './pages/LoginPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
+import { AuthProvider } from './utils/AuthContext.tsx';
 
 const queryClient = new QueryClient();
 
@@ -16,23 +17,25 @@ if (!root) throw new Error("Root element not found");
 
 ReactDOM.createRoot(root).render(
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={
-          <DefaultLayout>
-            <HomePage />
-          </DefaultLayout>
-        } />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={
+            <DefaultLayout>
+              <HomePage />
+            </DefaultLayout>
+          } />
 
-        <Route path='/login' element={
-          <LoginPage />
-        } 
-        />
+          <Route path='/login' element={
+            <LoginPage />
+          }
+          />
 
-        <Route path='/register' element={
-          <RegisterPage/> 
-        }/>
-      </Routes>
-    </BrowserRouter>
+          <Route path='/register' element={
+            <RegisterPage />
+          } />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </QueryClientProvider>
 );
