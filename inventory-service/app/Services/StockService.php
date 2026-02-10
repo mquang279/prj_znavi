@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InsufficientStockException;
 use App\Models\Stock;
 use App\Repositories\StockRepository;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,13 @@ class StockService
                 ->firstOrFail();
 
             if ($delta < 0 && $stock->available_qty < abs($delta)) {
-                throw new \RuntimeException('Not enough stock');
+                throw new InsufficientStockException([
+                    [
+                        'productId' => $productId,
+                        'requested' => abs($delta),
+                        'available' => $stock->available_qty,
+                    ],
+                ]);
             }
 
             $stock->available_qty += $delta;

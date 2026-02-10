@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Models\UserDTO;
 
 class AuthController extends Controller
 {
@@ -20,7 +21,12 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $user = auth()->user();
+
+        return response()->json([
+            "accessToken" => $token,
+            "user" => $user
+        ], 200);
     }
 
     public function register(RegisterRequest $request)
@@ -28,11 +34,6 @@ class AuthController extends Controller
         User::create($request->validated());
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function me()
     {
         return response()->json(auth()->user());
@@ -50,7 +51,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    /**
+    /**Closure
      * Refresh a token.
      *
      * @return \Illuminate\Http\JsonResponse

@@ -1,6 +1,7 @@
 import { Equal, Heart, Menu, Search, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router";
+import { useAuth } from "../../hooks/auth/useAuth";
 
 interface NavItem {
     icon?: any,
@@ -17,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
 
 const Header = () => {
     const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const { isAuthenticated, isLoading } = useAuth();
 
     return (
         <div className="sticky top-0 z-50">
@@ -41,6 +43,9 @@ const Header = () => {
                     </div>
                     <NavLink to={"/"}><Heart size={16} /></NavLink>
                     <NavLink to={"/"}><ShoppingBag size={16} /></NavLink>
+                    {!isLoading && !isAuthenticated &&
+                        <NavLink to={"/login"} className="text-sm border rounded-md px-5 border-black py-1.5 hover:bg-black hover:text-white">Log in</NavLink>
+                    }
                 </div>
             </div>
             {modalOpen &&
