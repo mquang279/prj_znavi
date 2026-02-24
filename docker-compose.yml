@@ -59,24 +59,26 @@ services:
       retries: 5
 
   billing-db:
-    image: postgres:17-alpine
+    image: mysql:8.4
     container_name: billing-db
     restart: always
     environment:
-      POSTGRES_DB: billing
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: mypassword
+      MYSQL_DATABASE: billing_db
+      MYSQL_USER: billing_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "3307:3306"
     volumes:
-      - billing-data:/var/lib/postgresql/data
+      - billing-data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d billing"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
+
 
   inventory-db:
     image: postgres:17-alpine
@@ -136,12 +138,12 @@ services:
       - ./billing-service:/var/www
       - billing-vendor:/var/www/vendor
     environment:
-      DB_CONNECTION: pgsql
+      DB_CONNECTION: mysql
       DB_HOST: billing-db
-      DB_PORT: 5432
-      DB_DATABASE: billing
-      DB_USERNAME: root
-      DB_PASSWORD: mypassword
+      DB_PORT: 3306
+      DB_DATABASE: billing_db
+      DB_USERNAME: billing_user
+      DB_PASSWORD: secret
       APP_ENV: local
       APP_DEBUG: "true"
     ports:

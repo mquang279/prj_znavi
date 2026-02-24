@@ -32,7 +32,10 @@ class HandleRequestId
         if ($reservation && ($reservation->status !== 'RESERVED' || str_contains($url, 'reserve'))) {
             return response()->json($reservation, 200);
         }
-
+        Log::info('Incoming request', [
+            'request_id' => $request->header('x-request-id'),
+            'path' => $request->path(),
+        ]);
         return $next($request);
     }
 
